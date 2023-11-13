@@ -4,20 +4,21 @@
 #include "lib/FitnessDataStruct.h"
 
 // Global variables
-char *fileName = "FitnessData_2023.csv";
+char fileName[50];
 FITNESS_DATA fitnessData[1000];
+int numRecords = 0;
 
 char selectOption()
 {
-    printf("\nPlease select an option:\n");
-    printf("\tA - Specify the file to be imported, the current loaded file is '%s'\n\t    (new file must be of '.csv' format)\n", fileName);
-    printf("\tB - Display the file's total number of records\n");
-    printf("\tC - Find the date and time of the timeslot with the fewest number ofsteps\n");
-    printf("\tD - Find the date and time of the timeslot with the largest number of steps\n");
-    printf("\tE - Find the mean step count of all the records in the file\n");
-    printf("\tF - Find the longest continuous period where the step count is over 500\n");
-    printf("\tQ - Quit the program\n");
-    printf(">>> ");
+    printf("\nMenu Options:\n");
+    printf("A: Specify the filename to be imported\n");
+    printf("B: Display the total number of records in the file\n");
+    printf("C: Find the date and time of the timeslot with the fewest steps\n");
+    printf("D: Find the date and time of the timeslot with the largest number of steps\n");
+    printf("E: Find the mean step count of all the records in the file\n");
+    printf("F: Find the longest continuous period where the step count is over 500\n");
+    printf("Q: Quit the program\n");
+    printf("Enter choice: ");
 
     char selection;
     scanf(" %c", &selection);
@@ -25,11 +26,6 @@ char selectOption()
 }
 
 int main() {
-    // Open file initially
-    FILE *file = openFile(fileName, "r");
-    int numRecords = getNumRecords(file);
-    parseFitnessData(file, numRecords, fitnessData);
-
     while (1 == 1)
     {
         char selection = selectOption();
@@ -38,17 +34,18 @@ int main() {
         {
             case 'A':
             {
-                char newFileName[25];
                 printf("Input filename: ");
-                scanf("%s", newFileName);
-                if (fileIsValid(newFileName) == 1)
+                scanf("%s", fileName);
+                if (fileIsValid(fileName) == 1)
                 {
-                    fileName = newFileName;
-                    fclose(file);
-                    file = openFile(fileName, "r");
-                    numRecords = getNumRecords(file);
-                    parseFitnessData(file, numRecords, fitnessData);
+                    FILE *file = openFile(fileName, "r");
+                    getFitnessData(file, fitnessData, &numRecords);
                     printf("Opened file updated\n");
+                    fclose(file);
+                }
+                else 
+                {
+                    return 0;
                 }
                 break;
             }
@@ -98,7 +95,7 @@ int main() {
                     total += fitnessData[i].steps;
                 }
                 mean = total / numRecords;
-                printf("Mean step count: %.2f\n", mean);
+                printf("Mean step count: %.0f\n", mean);
                 break;
             }
             case 'F':

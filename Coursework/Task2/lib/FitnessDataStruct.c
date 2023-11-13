@@ -13,14 +13,6 @@ FILE *openFile(char *fileName, char *mode)
 
 int fileIsValid(char *fileName)
 {
-    // Locate the last dot in the filename and compare the substring after it with the specified requirements
-    const char *dot = strrchr(fileName, '.');
-    if (dot == fileName || !dot || strcmp(dot+1, "csv") != 0)
-    {
-        printf("The file name isn't in the expected .csv format\n");
-        return 0;
-    }
-
     // Check that the file exists
     FILE *file = fopen(fileName, "r");
     if (file == NULL)
@@ -52,44 +44,29 @@ void tokeniseRecord(const char *input, const char *delimiter,
     if (token != NULL) {
         strcpy(steps, token);
     }
-    
+
     // Free the duplicated string
     free(inputCopy);
 }
 
-void parseFitnessData(FILE *file, int numRecords, FITNESS_DATA *output)
+void getFitnessData(FILE *file, FITNESS_DATA *output, int *numRecords)
 {
     FITNESS_DATA currentRecord;
 
     int maxLength = 100;
     char lineBuffer[maxLength];
 
-    for (int i = 0; i < numRecords; i++)
+    int count = 0;
+    while(fgets(lineBuffer, maxLength, file) != NULL)
     {
         char date[11], time[6], steps[11];
-        fgets(lineBuffer, maxLength, file);
         tokeniseRecord(lineBuffer, ",", date, time, steps);
 
         strcpy(currentRecord.date, date);
         strcpy(currentRecord.time, time);
         currentRecord.steps = atoi(steps);
-        output[i] = currentRecord;
+        output[count] = currentRecord;
+        count++;
     }
-}
-
-int getNumRecords(FILE *file)
-{
-    int numRecords = 0;
-
-    int maxLength = 100;
-    char lineBuffer[maxLength];
-
-    while(fgets(lineBuffer, maxLength, file) != NULL)
-    {
-        numRecords++;
-    }
-
-    // Reset the pointer to the 1st line of the file
-    rewind(file);
-    return numRecords;
+    *numRecords = count;
 }

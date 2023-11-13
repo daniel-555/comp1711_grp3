@@ -18,10 +18,6 @@ int fileIsValid(char *fileName);
 void tokeniseRecord(const char *input, const char *delimiter,
                     char *date, char *time, char *steps);
 
-void parseFitnessData(FILE *file, int numRecords, FITNESS_DATA *output);
-
-int getNumRecords(FILE *file);
-
-
+void getFitnessData(FILE *file, FITNESS_DATA *output, int *numRecords);
 
 #endif
