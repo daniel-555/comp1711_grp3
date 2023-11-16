@@ -49,6 +49,8 @@ void tokeniseRecord(const char *input, const char *delimiter,
     free(inputCopy);
 }
 
+FITNESS_DATA fitnessdata[1000];
+
 void getFitnessData(FILE *file, FITNESS_DATA *output, int *numRecords)
 {
     FITNESS_DATA currentRecord;
