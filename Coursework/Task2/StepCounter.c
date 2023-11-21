@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
 #include "FitnessDataStruct.h"
 
@@ -96,7 +95,7 @@ int main() {
                 }
                 mean /= numRecords;
 
-                printf("Mean step count: %.0f\n", round(mean));
+                printf("Mean step count: %.0f\n", roundInt(mean));
                 break;
             }
             case 'F':

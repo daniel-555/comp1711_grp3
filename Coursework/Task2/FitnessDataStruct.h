@@ -11,6 +11,13 @@ typedef struct {
     unsigned steps;
 } FITNESS_DATA;
 
+float roundInt(float num)
+{
+    num += 0.5;
+    int intNum = (int) num;
+    return (float) intNum;
+}
+
 FILE *openFile(char *fileName, char *mode)
 {
     FILE *file = fopen(fileName, mode);
