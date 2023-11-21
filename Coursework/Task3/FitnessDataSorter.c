@@ -10,7 +10,7 @@ typedef struct {
 } FitnessData;
 
 // Global Variables
-char fileName[50] = "FitnessData.csv";
+char fileName[50];
 FitnessData fitnessRecords[1000];
 int numRecords;
 
@@ -19,6 +19,9 @@ int numRecords;
 int tokeniseRecord(char *record, char delimiter, char *date, char *time, char *steps) {
     char *ptr = strtok(record, &delimiter);
     if (ptr != NULL) {
+        
+
+
         strcpy(date, ptr);
         ptr = strtok(NULL, &delimiter);
         if (ptr != NULL) {
@@ -33,7 +36,7 @@ int tokeniseRecord(char *record, char delimiter, char *date, char *time, char *s
     return 1;
 }
 
-void getFitnessData(FILE *file, FitnessData *output, int *numRecords)
+int getFitnessData(FILE *file, FitnessData *output, int *numRecords)
 {
     FitnessData currentRecord;
 
@@ -49,7 +52,7 @@ void getFitnessData(FILE *file, FitnessData *output, int *numRecords)
         if (recordValidFormat == 1)
         {
             printf("File is not in the expeted format\n");
-            exit(1);
+            return 1;
         }
 
         strcpy(currentRecord.date, date);
@@ -60,6 +63,7 @@ void getFitnessData(FILE *file, FitnessData *output, int *numRecords)
         count++;
     }
     *numRecords = count;
+    return 0;
 }
 
 // Comparator function for the quicksort algorithm
@@ -82,7 +86,10 @@ int main()
     }
 
     // Parse data from the file into the fitnessRecords array
-    getFitnessData(file, fitnessRecords, &numRecords);
+    if (getFitnessData(file, fitnessRecords, &numRecords))
+    {
+        return 1;
+    };
 
     fclose(file);
 
