@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
-#include "lib/FitnessDataStruct.h"
+#include "FitnessDataStruct.h"
 
 // Global variables
 char fileName[50];
@@ -45,7 +46,7 @@ int main() {
                 }
                 else 
                 {
-                    return 0;
+                    return 1;
                 }
                 break;
             }
@@ -88,14 +89,14 @@ int main() {
             }
             case 'E':
             {
-                int total = 0;
-                float mean;
+                float mean = 0;
                 for (int i = 0; i < numRecords; i++)
                 {
-                    total += fitnessData[i].steps;
+                    mean += fitnessData[i].steps;
                 }
-                mean = total / numRecords;
-                printf("Mean step count: %.0f\n", mean);
+                mean /= numRecords;
+
+                printf("Mean step count: %.0f\n", round(mean));
                 break;
             }
             case 'F':

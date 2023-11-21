@@ -1,4 +1,15 @@
-#include "FitnessDataStruct.h"
+#ifndef FITNESSDATASTRUCT_H
+#define FITNESSDATASTRUCT_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char date[11];
+    char time[6];
+    unsigned steps;
+} FITNESS_DATA;
 
 FILE *openFile(char *fileName, char *mode)
 {
@@ -49,8 +60,6 @@ void tokeniseRecord(const char *input, const char *delimiter,
     free(inputCopy);
 }
 
-FITNESS_DATA fitnessdata[1000];
-
 void getFitnessData(FILE *file, FITNESS_DATA *output, int *numRecords)
 {
     FITNESS_DATA currentRecord;
@@ -72,3 +81,5 @@ void getFitnessData(FILE *file, FITNESS_DATA *output, int *numRecords)
     }
     *numRecords = count;
 }
+
+#endif
