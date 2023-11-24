@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct {
     char date[11];
     char time[6];
@@ -17,14 +16,36 @@ int numRecords;
 // Function to tokenize a record
 // Returns 0 if executed properly or 1 if date/time is missing
 int tokeniseRecord(char *record, char delimiter, char *date, char *time, char *steps) {
+    int i = 0;
+
     char *ptr = strtok(record, &delimiter);
     if (ptr != NULL) {
-        
-
+        // Check that the date is the valid length and has dashes at the expected places
+        while (*(ptr+i) != '\0') i++;
+        if (i != 10)
+        {
+            return 1;
+        }
+        if (ptr[4] != '-' || ptr[7] != '-')
+        {
+            return 1;
+        }
 
         strcpy(date, ptr);
         ptr = strtok(NULL, &delimiter);
         if (ptr != NULL) {
+            // Check that the time is the expected length and has a colon in the expected place
+            i = 0;
+            while (*(ptr + i) != '\0') i++;
+            if (i != 5)
+            {
+                return 1;
+            }
+            if (ptr[2] != ':')
+            {
+                return 1;
+            }
+
             strcpy(time, ptr);
             ptr = strtok(NULL, &delimiter);
             if (ptr != NULL) {
@@ -36,7 +57,8 @@ int tokeniseRecord(char *record, char delimiter, char *date, char *time, char *s
     return 1;
 }
 
-int getFitnessData(FILE *file, FitnessData *output, int *numRecords)
+// Parses fitness data into an array of structs
+void getFitnessData(FILE *file, FitnessData *output, int *numRecords)
 {
     FitnessData currentRecord;
 
@@ -52,18 +74,19 @@ int getFitnessData(FILE *file, FitnessData *output, int *numRecords)
         if (recordValidFormat == 1)
         {
             printf("File is not in the expeted format\n");
-            return 1;
+            exit(1);
         }
 
+        // Map the date time and steps to the currentRecord buffer
         strcpy(currentRecord.date, date);
         strcpy(currentRecord.time, time);
         currentRecord.steps = atoi(steps);
 
+        // Add the currentRecord to the array for fitnessData
         output[count] = currentRecord;
         count++;
     }
     *numRecords = count;
-    return 0;
 }
 
 // Comparator function for the quicksort algorithm
@@ -86,10 +109,7 @@ int main()
     }
 
     // Parse data from the file into the fitnessRecords array
-    if (getFitnessData(file, fitnessRecords, &numRecords))
-    {
-        return 1;
-    };
+    getFitnessData(file, fitnessRecords, &numRecords);
 
     fclose(file);
 
