@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdbool.h>
+#include <ctype.h>
 typedef struct {
     char date[11];
     char time[6];
@@ -14,47 +15,47 @@ FitnessData fitnessRecords[1000];
 int numRecords;
 
 // Function to tokenize a record
-// Returns 0 if executed properly or 1 if date/time is missing
-int tokeniseRecord(char *record, char delimiter, char *date, char *time, char *steps) {
-    int i = 0;
+// Returns true if executed properly or false if in the incorrect format
+bool tokeniseRecord(char *record, char delimiter, char *date, char *time, char *steps) {
 
-    char *ptr = strtok(record, &delimiter);
-    if (ptr != NULL) {
-        // Check that the date is the valid length and has dashes at the expected places
-        while (*(ptr+i) != '\0') i++;
-        if (i != 10)
+    // 10 chars for date, 5 chars for time, 2 commas, and at least one digit for steps
+    const int expectedMinLength = 18;
+    
+    if (strlen(record) < expectedMinLength)
+    {
+        return false;
+    }
+
+    // Extract date, time and steps
+    if (sscanf(record, "%10[^,],%5[^,],%9s", date, time, steps) != 3)
+    {
+        return false;
+    }
+
+
+    // Check if the date time and steps are of the expected lengths
+    if (strlen(date) != 10 || strlen(time) != 5 || strlen(steps) == 0)
+    {
+        return false;
+    }
+
+    // Check that the date and time are in the expected format
+    if (date[4] != '-' || date[7] != '-' || time[2] != ':')
+    {
+        return false;
+    }
+
+    // Check that steps is actually an integer
+    for (int i = 0; steps[i] != '\0'; i++)
+    {
+        if (!isdigit(steps[i]))
         {
-            return 1;
-        }
-        if (ptr[4] != '-' || ptr[7] != '-')
-        {
-            return 1;
-        }
-
-        strcpy(date, ptr);
-        ptr = strtok(NULL, &delimiter);
-        if (ptr != NULL) {
-            // Check that the time is the expected length and has a colon in the expected place
-            i = 0;
-            while (*(ptr + i) != '\0') i++;
-            if (i != 5)
-            {
-                return 1;
-            }
-            if (ptr[2] != ':')
-            {
-                return 1;
-            }
-
-            strcpy(time, ptr);
-            ptr = strtok(NULL, &delimiter);
-            if (ptr != NULL) {
-                strcpy(steps, ptr);
-                return 0;
-            }
+            return false;
         }
     }
-    return 1;
+
+    // The record has been successfully tokenised
+    return true;
 }
 
 // Parses fitness data into an array of structs
@@ -69,9 +70,8 @@ void getFitnessData(FILE *file, FitnessData *output, int *numRecords)
     while(fgets(lineBuffer, maxLength, file) != NULL)
     {
         char date[11], time[6], steps[11];
-        int recordValidFormat = tokeniseRecord(lineBuffer, ',', date, time, steps);
 
-        if (recordValidFormat == 1)
+        if (!tokeniseRecord(lineBuffer, ',', date, time, steps))
         {
             printf("File is not in the expeted format\n");
             exit(1);
